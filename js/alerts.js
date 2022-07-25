@@ -1,58 +1,80 @@
-import { closeImgPrev } from './image-upload.js';
+import { closeImagePreview } from './image-upload.js';
+import { isEscape } from './utils.js';
+import { closeImagePreviewAllData } from './image-upload.js';
 
 const body = document.body;
 
-const showSuccessMessage = () => {
-  closeImgPrev();
-  const popupSection = document.querySelector('#success').content.querySelector('.success');
-  const popup = popupSection.cloneNode(true);
-  body.append(popup);
-  const successButton = document.querySelector('.success__button');
-  successButton.addEventListener('click', closeSuccessAlert);
-
-  function closeSuccessAlert() {
-    popup.remove();
+const closeAlert = (evt, popup) => {
+  if (isEscape(evt)) {
+    document.removeEventListener('keydown', closeAlert);
   }
+  popup.remove();
+};
 
-  document.addEventListener('keydown', escCloseSuccessAlert);
-
-  function escCloseSuccessAlert(evt) {
-    if (evt.key === 'Escape') {
-      popup.remove();
-      document.removeEventListener('keydown', escCloseSuccessAlert);
-    }
+const closeAlertOnUtsideClick = (evt, popupElement) => {
+  const errorInnerElement = document.querySelector('.error__inner');
+  const isOutsideClick = !evt.composedPath().includes(errorInnerElement);
+  if (isOutsideClick) {
+    popupElement.remove();
   }
 };
 
-function showErrorMessage() {
-  closeImgPrev();
-  const errorSection = document.querySelector('#error').content.querySelector('.error');
-  const errorPopup = errorSection.cloneNode(true);
-  body.append(errorPopup);
-  const errorButton = document.querySelector('.error__button');
-  errorButton.addEventListener('click', closeErrorAlert);
+const showSuccessMessage = () => {
+  closeImagePreviewAllData();
+  const popupSectionElement = document.querySelector('#success').content.querySelector('.success');
+  const successPopupElement = popupSectionElement.cloneNode(true);
+  body.append(successPopupElement);
+  const onSuccessButtonClick = document.querySelector('.success__button');
 
-  function closeErrorAlert() {
-    errorPopup.remove();
-  }
-
-  document.addEventListener('keydown', escCloseErrorAlert);
-
-  function escCloseErrorAlert(evt) {
-    if (evt.key === 'Escape') {
-      errorPopup.remove();
-      document.removeEventListener('keydown', escCloseErrorAlert);
-    }
-  }
-
-  errorPopup.addEventListener('click', (e) => {
-    const errorInner = document.querySelector('.error__inner');
-    const isOutsideClick = !e.composedPath().includes(errorInner);
-    if (isOutsideClick) {
-      closeImgPrev();
-      errorPopup.remove();
-    }
+  document.addEventListener('keydown', (evt) => {
+    closeAlert(evt, successPopupElement);
   });
-}
+  onSuccessButtonClick.addEventListener('click', (evt) => {
+    closeAlert(evt, successPopupElement);
+  });
+  successPopupElement.addEventListener('click', (evt) => {
+    closeAlertOnUtsideClick(evt, successPopupElement);
+  });
+};
 
-export { showSuccessMessage, showErrorMessage };
+const showErrorMessage = () => {
+  closeImagePreview();
+  const errorSectionElement = document.querySelector('#error').content.querySelector('.error');
+  const errorPopupElement = errorSectionElement.cloneNode(true);
+  body.append(errorPopupElement);
+  const errorButton = document.querySelector('.error__button');
+
+  document.addEventListener('keydown', (evt) => {
+    closeAlert(evt, errorPopupElement);
+  });
+  errorButton.addEventListener('click', (evt) => {
+    closeAlert(evt, errorPopupElement);
+  });
+
+  errorPopupElement.addEventListener('click', (evt) => {
+    closeAlertOnUtsideClick(evt, errorPopupElement);
+  });
+};
+
+const showGetDataErrorMessage = (message) => {
+  const alertContainer = document.createElement('div');
+  alertContainer.style.zIndex = 100;
+  alertContainer.style.position = 'absolute';
+  alertContainer.style.left = 0;
+  alertContainer.style.top = 0;
+  alertContainer.style.right = 0;
+  alertContainer.style.padding = '10px 3px';
+  alertContainer.style.fontSize = '30px';
+  alertContainer.style.textAlign = 'center';
+  alertContainer.style.backgroundColor = 'pink';
+
+  alertContainer.textContent = message;
+
+  document.body.append(alertContainer);
+
+  setTimeout(() => {
+    alertContainer.remove();
+  }, 5000);
+};
+
+export { showSuccessMessage, showErrorMessage, showGetDataErrorMessage };

@@ -1,15 +1,9 @@
 import { createUsersPosts } from './social-images.js';
+import { shuffle } from './utils.js';
 
-const filterSection = document.querySelector('.img-filters');
-const filterForm = filterSection.querySelector('.img-filters__form');
-const filterButton = filterSection.querySelectorAll('.img-filters__button');
-
-function initPostsFilter(userPosts){
-  filterForm.addEventListener('click', (evt) => {
-    changePostsFilter(evt, userPosts);});
-  showFilterSection();
-  enableFilter();
-}
+const filterElement = document.querySelector('.img-filters');
+const onFilterFormClick = filterElement.querySelector('.img-filters__form');
+const filterButton = filterElement.querySelectorAll('.img-filters__button');
 
 const debounce = (callback, delay) => {
   let timeoutId;
@@ -21,7 +15,31 @@ const debounce = (callback, delay) => {
   };
 };
 
-function changePostsFilter(evt, userPosts) {
+const showFilterSection = () => {
+  filterElement.classList.remove('img-filters--inactive');
+  filterElement.classList.add('img-filters--active');
+};
+
+const deletePosts = () => {
+  const posts = document.querySelector('.pictures').querySelectorAll('.picture');
+  posts.forEach((post) => {
+    post.remove();
+  });
+};
+
+const changeFilter = (filterName) => {
+  document.querySelectorAll('.img-filters__button').forEach((element) => element.classList.remove('img-filters__button--active'));
+  document.querySelector(`#${filterName}`).classList.add('img-filters__button--active');
+};
+
+const filterRandom = (userPosts) => {
+  const shuffledUserPosts = shuffle(userPosts);
+  return shuffledUserPosts.slice(0, 10);
+};
+
+const filterDiscuss = (userPosts) => userPosts.slice().sort((post1, post2) => post2.comments.length - post1.comments.length);
+
+const changePostsFilter = (evt, userPosts) => {
   const filter = evt.target.id;
   deletePosts();
   switch (filter) {
@@ -44,60 +62,25 @@ function changePostsFilter(evt, userPosts) {
       }, 500)();
       break;
   }
-}
+};
 
-function deletePosts() {
-  const posts = document.querySelector('.pictures').querySelectorAll('.picture');
-
-  posts.forEach((post) => {
-    post.remove();
-  });
-}
-
-function filterRandom(userPosts) {
-  const shuffledUserPosts = shuffle(userPosts);
-  return shuffledUserPosts.slice(0, 10);
-}
-
-function shuffle(array) {
-  let currentIndex = array.length,  randomIndex;
-
-  while (currentIndex !== 0) {
-
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
-  }
-
-  return array;
-}
-
-function filterDiscuss(userPosts) {
-  return userPosts.slice().sort((post1, post2) => post2.comments.length - post1.comments.length);
-}
-
-function changeFilter (filterName) {
-  document.querySelectorAll('.img-filters__button').forEach((element) => element.classList.remove('img-filters__button--active'));
-  document.querySelector(`#${filterName}`).classList.add('img-filters__button--active');
-}
-
-function showFilterSection() {
-  filterSection.classList.remove('img-filters--inactive');
-  filterSection.classList.add('img-filters--active');
-}
-
-function enableFilter() {
+const enableFilter = () => {
   filterButton.forEach((button) => {
     button.disabled = false;
   });
-}
+};
 
-function disableFilter() {
+const initPostsFilter = (userPosts) => {
+  onFilterFormClick.addEventListener('click', (evt) => {
+    changePostsFilter(evt, userPosts);});
+  showFilterSection();
+  enableFilter();
+};
+
+const disableFilter = () => {
   filterButton.forEach((button) => {
     button.disabled = true;
   });
-}
+};
 
 export { initPostsFilter, disableFilter};
