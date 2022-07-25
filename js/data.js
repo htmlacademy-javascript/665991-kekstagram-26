@@ -1,21 +1,23 @@
 import { pristine } from './validation-form.js';
 import { showSuccessMessage } from './alerts.js';
 import { showErrorMessage } from './alerts.js';
+import { showGetDataErrorMessage } from './alerts.js';
 
-const submitForm = document.querySelector('.img-upload__form');
+const onFormSubmitElement = document.querySelector('.img-upload__form');
 
-submitForm.addEventListener('submit', submitImgForm);
+const URL = 'https://26.javascript.pages.academy/kekstagram1';
 
-async function submitImgForm(evt) {
+const submitImgForm = async (evt) => {
   evt.preventDefault();
 
-  const valid = pristine.validate();
-  if (valid) {
+  const isFormValid = pristine.validate();
+
+  if (isFormValid) {
     const submitButton = document.querySelector('.img-upload__submit');
     submitButton.disabled = true;
     const formData = new FormData(evt.target);
     fetch(
-      'https://26.javascript.pages.academy/kekstagram',
+      URL,
       {
         method: 'POST',
         type: 'multipart/form-data',
@@ -32,12 +34,22 @@ async function submitImgForm(evt) {
       showErrorMessage();
     });
   }
-}
+};
 
-async function getData() {
-  const data = await fetch('https://26.javascript.pages.academy/kekstagram/data')
-    .then((response) => response.json());
+onFormSubmitElement.addEventListener('submit', submitImgForm);
+
+const getData = async () => {
+  const data = await fetch(`${URL}/data`)
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(`${response.status} ${response.statusText}`);
+    })
+    .catch(() => {
+      showGetDataErrorMessage('Полина Шнайдер лучший');
+    });
   return data;
-}
+};
 
 export { getData };

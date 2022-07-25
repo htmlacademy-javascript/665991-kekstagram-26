@@ -1,17 +1,18 @@
 const hashtagInputElement = document.querySelector('.text__hashtags');
-const commentInput = document.querySelector('.text__description');
-const submitForm = document.querySelector('.img-upload__form');
+const commentInputElement = document.querySelector('.text__description');
+const submitFormElement = document.querySelector('.img-upload__form');
 
 const MAX_COMMENT_LENGTH = 140;
 const MAX_HASHTAG_COUNT = 5;
 
-const pristine = new Pristine(submitForm, {
+const pristine = new Pristine(submitFormElement, {
   classTo: 'img-upload__field-wrapper',
   errorClass: 'has-danger',
   errorTextParent: 'img-upload__field-wrapper',
   errorTextTag: 'div',
   errorTextClass: 'form-text-error' ,
 });
+
 pristine.addValidator(hashtagInputElement, (value) => {
   const hashtagList = value.split(/\s/);
   if (hashtagList.length === 1 && hashtagList[0] === '') {
@@ -33,11 +34,15 @@ pristine.addValidator(hashtagInputElement, (value) => {
   return true;
 }, 'Введен некорректный хэштэг', 1, false);
 
-pristine.addValidator(commentInput, (value) => {
+pristine.addValidator(commentInputElement, (value) => {
   if (value.length > MAX_COMMENT_LENGTH) {
     return false;
   }
   return true;
 }, `Комментарий не может превышать ${ MAX_COMMENT_LENGTH } символов`, 1, false);
 
-export { pristine };
+const resetInputErrors = () => {
+  pristine.reset();
+};
+
+export { pristine, resetInputErrors };

@@ -1,51 +1,43 @@
-const smallButton = document.querySelector('.scale__control--smaller');
-const bigButton = document.querySelector('.scale__control--bigger');
+const onSmallButtonClick = document.querySelector('.scale__control--smaller');
+const onBigButtonClick = document.querySelector('.scale__control--bigger');
 const radioButtons = document.querySelectorAll('.effects__radio');
-const imageScaleInput = document.querySelector('.scale__control--value');
-const prevImgContainer = document.querySelector('.img-upload__preview');
-const effectValueField = document.querySelector('.img-upload__effect-level');
-const slider = document.querySelector('.effect-level__slider');
-const effectLevelValue = document.querySelector('.effect-level__value');
+const imageScaleInputElement = document.querySelector('.scale__control--value');
+const imagePreviewElement = document.querySelector('.img-upload__preview img');
+const effectValueFieldElement = document.querySelector('.img-upload__effect-level');
+const sliderElement = document.querySelector('.effect-level__slider');
+const effectLevelValueElement = document.querySelector('.effect-level__value');
 
 const SCALE_STEP = 25;
 const MAX_IMAGE_SCALE = 100;
 
-smallButton.addEventListener('click', decreaseScale);
-bigButton.addEventListener('click', increaseScale);
-for (const radioButton of radioButtons) {
-  radioButton.addEventListener('change', changeEffects);
-}
+const imageScaleTransformation = (numericScale) => {
+  imagePreviewElement.style.transform = `scale(${numericScale * 0.01})`;
+};
 
-function decreaseScale () {
-  let imgScl = imageScaleInput.value.replace('%', '');
+const decreaseScale = () => {
+  let imgScl = imageScaleInputElement.value.replace('%', '');
   if (imgScl > SCALE_STEP) {
     imgScl -= SCALE_STEP;
-    imageScaleInput.value = `${imgScl}%`;
+    imageScaleInputElement.value = `${imgScl}%`;
     imageScaleTransformation(imgScl);
   }
-}
+};
 
-function increaseScale () {
-  const imgScl = imageScaleInput.value.replace('%', '');
+onSmallButtonClick.addEventListener('click', decreaseScale);
+
+const increaseScale = () => {
+  const imgScl = imageScaleInputElement.value.replace('%', '');
   if (imgScl < MAX_IMAGE_SCALE) {
     let numScl = parseInt(imgScl, 10);
     numScl += SCALE_STEP;
-    imageScaleInput.value = `${numScl  }%`;
+    imageScaleInputElement.value = `${numScl  }%`;
     imageScaleTransformation(numScl);
   }
-}
+};
 
-function imageScaleTransformation(numericScale) {
-  prevImgContainer.querySelector('img').style.transform = `scale(${numericScale * 0.01})`;
-}
+onBigButtonClick.addEventListener('click', increaseScale);
 
-function changeEffects (event) {
-  prevImgContainer.querySelector('img').classList = '';
-  prevImgContainer.querySelector('img').classList.add(`effects__preview--${event.target.value}`);
-  changeSliderScale(event.target.value);
-}
-
-noUiSlider.create(slider, {
+noUiSlider.create(sliderElement, {
   range: {
     min: 0,
     max: 100,
@@ -53,11 +45,11 @@ noUiSlider.create(slider, {
   start: 100,
 });
 
-function changeSliderScale(effectName) {
+const changeSliderScale = (effectName) => {
   switch(effectName) {
     case 'chrome':
-      effectValueField.classList.remove('hidden');
-      slider.noUiSlider.updateOptions({
+      effectValueFieldElement.classList.remove('hidden');
+      sliderElement.noUiSlider.updateOptions({
         range: {
           min: 0,
           max: 1
@@ -67,8 +59,8 @@ function changeSliderScale(effectName) {
       });
       break;
     case 'sepia':
-      effectValueField.classList.remove('hidden');
-      slider.noUiSlider.updateOptions({
+      effectValueFieldElement.classList.remove('hidden');
+      sliderElement.noUiSlider.updateOptions({
         range: {
           min: 0,
           max: 1
@@ -78,8 +70,8 @@ function changeSliderScale(effectName) {
       });
       break;
     case 'marvin':
-      effectValueField.classList.remove('hidden');
-      slider.noUiSlider.updateOptions({
+      effectValueFieldElement.classList.remove('hidden');
+      sliderElement.noUiSlider.updateOptions({
         range: {
           min: 0,
           max: 100
@@ -89,8 +81,8 @@ function changeSliderScale(effectName) {
       });
       break;
     case 'phobos':
-      effectValueField.classList.remove('hidden');
-      slider.noUiSlider.updateOptions({
+      effectValueFieldElement.classList.remove('hidden');
+      sliderElement.noUiSlider.updateOptions({
         range: {
           min: 0,
           max: 3
@@ -100,8 +92,8 @@ function changeSliderScale(effectName) {
       });
       break;
     case 'heat':
-      effectValueField.classList.remove('hidden');
-      slider.noUiSlider.updateOptions({
+      effectValueFieldElement.classList.remove('hidden');
+      sliderElement.noUiSlider.updateOptions({
         range: {
           min: 1,
           max: 3
@@ -111,29 +103,41 @@ function changeSliderScale(effectName) {
       });
       break;
     case 'none':
-      prevImgContainer.querySelector('img').style.filter = null;
-      effectValueField.classList.add('hidden');
+      imagePreviewElement.style.filter = null;
+      effectValueFieldElement.classList.add('hidden');
       break;
   }
+};
+
+const changeEffects = (event) => {
+  imagePreviewElement.classList = '';
+  imagePreviewElement.classList.add(`effects__preview--${event.target.value}`);
+  changeSliderScale(event.target.value);
+};
+
+for (const onRadioButtonClick of radioButtons) {
+  onRadioButtonClick.addEventListener('change', changeEffects);
 }
 
-slider.noUiSlider.on('update', () => {
-  const levelSlider = slider.noUiSlider.get();
-  const effectClass = prevImgContainer.querySelector('img').classList.value;
-  if (effectClass === 'effects__preview--chrome') {
-    prevImgContainer.querySelector('img').style.filter = `grayscale(${levelSlider})`;
+sliderElement.noUiSlider.on('update', () => {
+  const levelSlider = sliderElement.noUiSlider.get();
+  const effectClass = imagePreviewElement.classList.value;
+  switch(effectClass) {
+    case 'effects__preview--chrome':
+      imagePreviewElement.style.filter = `grayscale(${levelSlider})`;
+      break;
+    case 'effects__preview--sepia':
+      imagePreviewElement.style.filter = `sepia(${levelSlider})`;
+      break;
+    case 'effects__preview--marvin':
+      imagePreviewElement.style.filter = `invert(${levelSlider}%)`;
+      break;
+    case'effects__preview--phobos':
+      imagePreviewElement.style.filter = `blur(${levelSlider}px)`;
+      break;
+    case 'effects__preview--heat':
+      imagePreviewElement.style.filter = `brightness(${levelSlider})`;
+      break;
   }
-  else if (effectClass === 'effects__preview--sepia') {
-    prevImgContainer.querySelector('img').style.filter = `sepia(${levelSlider})`;
-  }
-  else if (effectClass === 'effects__preview--marvin') {
-    prevImgContainer.querySelector('img').style.filter = `invert(${levelSlider}%)`;
-  }
-  else if (effectClass === 'effects__preview--phobos') {
-    prevImgContainer.querySelector('img').style.filter = `blur(${levelSlider}px)`;
-  }
-  else if (effectClass === 'effects__preview--heat') {
-    prevImgContainer.querySelector('img').style.filter = `brightness(${levelSlider})`;
-  }
-  effectLevelValue.value = levelSlider;
+  effectLevelValueElement.value = levelSlider;
 });
