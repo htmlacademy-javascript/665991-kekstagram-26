@@ -1,10 +1,10 @@
 import { resetInputErrors } from './validation-form.js';
 import { isEscape } from './utils.js';
 
-const uploadImgInputElement = document.querySelector('.img-upload__input');
+const uploadImageInputElement = document.querySelector('.img-upload__input');
 const uploadOverlayElement = document.querySelector('.img-upload__overlay');
 const imagePreviewElement = document.querySelector('.img-upload__preview img');
-const onCloseButtonClick = document.querySelector('.img-upload__cancel');
+const closeButtonElement = document.querySelector('.img-upload__cancel');
 const hashtagInputElement = document.querySelector('.text__hashtags');
 const commentInputElement = document.querySelector('.text__description');
 const imageScaleValueElement = document.querySelector('.scale__control--value');
@@ -15,7 +15,7 @@ const DEFAULT_IMAGE_SCALE = 100;
 const closeImagePreview = () => {
   uploadOverlayElement.classList.add('hidden');
   body.classList.remove('modal-open');
-  uploadImgInputElement.value = '';
+  uploadImageInputElement.value = '';
   imagePreviewElement.classList = '';
   imagePreviewElement.style.filter = null;
   imagePreviewElement.style.transform = null;
@@ -34,29 +34,33 @@ const closeImagePreviewAllData = () => {
   clearHashtagsAndComments();
 };
 
-const escCloseImgPrev = (evt) => {
+const onDocumentEscapeKeydown = (evt) => {
   if (hashtagInputElement === document.activeElement) {
     evt.stopPropagation();
   } else if (commentInputElement === document.activeElement) {
     evt.stopPropagation();
   } else if (isEscape(evt)) {
     closeImagePreviewAllData();
-    document.removeEventListener('keydown', escCloseImgPrev);
+    document.removeEventListener('keydown', onDocumentEscapeKeydown);
     document.location.reload();
   }
 };
 
-const fileUploadChange = () => {
+const onUploadImageInputChange = () => {
   uploadOverlayElement.classList.remove('hidden');
   body.classList.add('modal-open');
-  imagePreviewElement.src = URL.createObjectURL(uploadImgInputElement.files[0]);
+  imagePreviewElement.src = URL.createObjectURL(uploadImageInputElement.files[0]);
   document.getElementById('effect-none').checked = true;
   imageScaleValueElement.value = `${DEFAULT_IMAGE_SCALE}%`;
-  document.addEventListener('keydown', escCloseImgPrev);
+  document.addEventListener('keydown', onDocumentEscapeKeydown);
 };
 
-uploadImgInputElement.addEventListener('change', fileUploadChange);
+uploadImageInputElement.addEventListener('change', onUploadImageInputChange);
 
-onCloseButtonClick.addEventListener('click', closeImagePreviewAllData);
+const onCloseButtonClick = () => {
+  closeImagePreviewAllData();
+};
+
+closeButtonElement.addEventListener('click', onCloseButtonClick);
 
 export { closeImagePreview, closeImagePreviewAllData };

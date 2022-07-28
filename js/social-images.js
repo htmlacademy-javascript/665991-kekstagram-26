@@ -11,6 +11,8 @@ const loadMoreCommentsButtonElement = document.querySelector('.social__comments-
 const onBigPictureCancelButtonClick = document.querySelector('.big-picture__cancel');
 const body = document.body;
 
+const MAX_NUMBER_OF_COMMENTS = 5;
+
 let comments = [];
 
 const renderComments = (partComments) => {
@@ -34,8 +36,7 @@ const renderComments = (partComments) => {
 
 const loadComments = () => {
   loadMoreCommentsButtonElement.classList.remove('hidden');
-  const partComments = comments.splice(0, 5);
-  renderComments(partComments);
+  renderComments(comments.splice(0, MAX_NUMBER_OF_COMMENTS));
   socialCommentsCurrentElement.textContent = document.querySelectorAll('.social__comment').length;
   if (!comments.length) {
     loadMoreCommentsButtonElement.classList.add('hidden');
