@@ -15,4 +15,14 @@ const shuffle = (array) => {
   return array;
 };
 
-export { isEscape, shuffle };
+const debounce = (callback, delay) => {
+  let timeoutId;
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(
+      () => callback.apply(this, rest), delay
+    );
+  };
+};
+
+export { isEscape, shuffle, debounce };

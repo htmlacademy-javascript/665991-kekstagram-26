@@ -1,19 +1,13 @@
 import { createUsersPosts } from './social-images.js';
 import { shuffle } from './utils.js';
+import { debounce } from './utils.js';
 
 const filterElement = document.querySelector('.img-filters');
 const onFilterFormClick = filterElement.querySelector('.img-filters__form');
 const filterButton = filterElement.querySelectorAll('.img-filters__button');
 
-const debounce = (callback, delay) => {
-  let timeoutId;
-  return (...rest) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(
-      () => callback.apply(this, rest), delay
-    );
-  };
-};
+const MAX_NUMBER_OF_RANDOM_POSTS = 10;
+const DEBOUNCE_DELAY = 500;
 
 const showFilterSection = () => {
   filterElement.classList.remove('img-filters--inactive');
@@ -32,10 +26,7 @@ const changeFilter = (filterName) => {
   document.querySelector(`#${filterName}`).classList.add('img-filters__button--active');
 };
 
-const filterRandom = (userPosts) => {
-  const shuffledUserPosts = shuffle(userPosts);
-  return shuffledUserPosts.slice(0, 10);
-};
+const filterRandom = (userPosts) => shuffle(userPosts).slice(0, MAX_NUMBER_OF_RANDOM_POSTS);
 
 const filterDiscuss = (userPosts) => userPosts.slice().sort((post1, post2) => post2.comments.length - post1.comments.length);
 
@@ -47,19 +38,19 @@ const changePostsFilter = (evt, userPosts) => {
       debounce(() => {
         changeFilter(filter);
         createUsersPosts(filterDiscuss(userPosts));
-      }, 500)();
+      }, DEBOUNCE_DELAY)();
       break;
     case 'filter-random':
       debounce(() => {
         changeFilter(filter);
-        createUsersPosts(filterRandom(userPosts, 10));
-      }, 500)();
+        createUsersPosts(filterRandom(userPosts, MAX_NUMBER_OF_RANDOM_POSTS));
+      }, DEBOUNCE_DELAY)();
       break;
     case 'filter-default':
       debounce(() => {
         changeFilter(filter);
         createUsersPosts(userPosts);
-      }, 500)();
+      }, DEBOUNCE_DELAY)();
       break;
   }
 };

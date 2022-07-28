@@ -3,11 +3,11 @@ import { showSuccessMessage } from './alerts.js';
 import { showErrorMessage } from './alerts.js';
 import { showGetDataErrorMessage } from './alerts.js';
 
-const onFormSubmitElement = document.querySelector('.img-upload__form');
+const imageFormElement = document.querySelector('.img-upload__form');
 
-const URL = 'https://26.javascript.pages.academy/kekstagram1';
+const URL = 'https://26.javascript.pages.academy/kekstagram';
 
-const submitImgForm = async (evt) => {
+const onFormSubmit = async (evt) => {
   evt.preventDefault();
 
   const isFormValid = pristine.validate();
@@ -36,7 +36,7 @@ const submitImgForm = async (evt) => {
   }
 };
 
-onFormSubmitElement.addEventListener('submit', submitImgForm);
+imageFormElement.addEventListener('submit', onFormSubmit);
 
 const getData = async () => {
   const data = await fetch(`${URL}/data`)

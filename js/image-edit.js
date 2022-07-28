@@ -1,5 +1,5 @@
-const onSmallButtonClick = document.querySelector('.scale__control--smaller');
-const onBigButtonClick = document.querySelector('.scale__control--bigger');
+const smallButtonElement = document.querySelector('.scale__control--smaller');
+const bigButtonElement = document.querySelector('.scale__control--bigger');
 const radioButtons = document.querySelectorAll('.effects__radio');
 const imageScaleInputElement = document.querySelector('.scale__control--value');
 const imagePreviewElement = document.querySelector('.img-upload__preview img');
@@ -14,7 +14,7 @@ const imageScaleTransformation = (numericScale) => {
   imagePreviewElement.style.transform = `scale(${numericScale * 0.01})`;
 };
 
-const decreaseScale = () => {
+const onSmallButtonClick = () => {
   let imgScl = imageScaleInputElement.value.replace('%', '');
   if (imgScl > SCALE_STEP) {
     imgScl -= SCALE_STEP;
@@ -23,9 +23,9 @@ const decreaseScale = () => {
   }
 };
 
-onSmallButtonClick.addEventListener('click', decreaseScale);
+smallButtonElement.addEventListener('click', onSmallButtonClick);
 
-const increaseScale = () => {
+const onBigButtonClick = () => {
   const imgScl = imageScaleInputElement.value.replace('%', '');
   if (imgScl < MAX_IMAGE_SCALE) {
     let numScl = parseInt(imgScl, 10);
@@ -35,7 +35,7 @@ const increaseScale = () => {
   }
 };
 
-onBigButtonClick.addEventListener('click', increaseScale);
+bigButtonElement.addEventListener('click', onBigButtonClick);
 
 noUiSlider.create(sliderElement, {
   range: {
@@ -109,14 +109,14 @@ const changeSliderScale = (effectName) => {
   }
 };
 
-const changeEffects = (event) => {
+const onRadioButtonClick = (event) => {
   imagePreviewElement.classList = '';
   imagePreviewElement.classList.add(`effects__preview--${event.target.value}`);
   changeSliderScale(event.target.value);
 };
 
-for (const onRadioButtonClick of radioButtons) {
-  onRadioButtonClick.addEventListener('change', changeEffects);
+for (const radioButtonElement of radioButtons) {
+  radioButtonElement.addEventListener('change', onRadioButtonClick);
 }
 
 sliderElement.noUiSlider.on('update', () => {
