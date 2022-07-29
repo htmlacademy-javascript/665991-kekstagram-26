@@ -1,6 +1,6 @@
 const isEscape = (evt) => evt.key === 'Escape';
 
-const shuffle = (array) => {
+const shuffleArray = (array) => {
   let currentIndex = array.length,  randomIndex;
 
   while (currentIndex !== 0) {
@@ -25,4 +25,4 @@ const debounce = (callback, delay) => {
   };
 };
 
-export { isEscape, shuffle, debounce };
+export { isEscape, shuffleArray, debounce };
